@@ -9,40 +9,62 @@ interface Platform {
   position: [number, number, number]
   size: [number, number, number]
   color: string
-  type?: 'normal' | 'jump' | 'slide' | 'grind'
+  type?: 'normal' | 'jump' | 'slide' | 'grind' | 'building' | 'wall'
+  rotation?: [number, number, number]
 }
 
 const platforms: Platform[] = [
-  { position: [0, -0.5, 0], size: [30, 1, 30], color: '#2c3e50', type: 'normal' },
-  { position: [25, 1, 5], size: [15, 1, 10], color: '#34495e', type: 'normal' },
-  { position: [45, 5, 0], size: [12, 1, 12], color: '#e74c3c', type: 'jump' },
-  { position: [60, 8, -5], size: [10, 1, 10], color: '#2c3e50', type: 'normal' },
-  { position: [75, 12, 5], size: [15, 1, 15], color: '#34495e', type: 'normal' },
-  { position: [75, 18, -15], size: [10, 1, 10], color: '#2c3e50', type: 'normal' },
-  { position: [60, 22, -25], size: [12, 1, 12], color: '#e74c3c', type: 'jump' },
-  { position: [45, 25, -20], size: [10, 1, 10], color: '#2c3e50', type: 'normal' },
-  { position: [30, 28, -15], size: [8, 1, 8], color: '#34495e', type: 'normal' },
-  { position: [15, 30, -10], size: [10, 1, 10], color: '#2c3e50', type: 'normal' },
-  { position: [0, 33, -5], size: [15, 1, 15], color: '#27ae60', type: 'jump' },
-  { position: [-15, 35, 5], size: [10, 1, 10], color: '#2c3e50', type: 'normal' },
-  { position: [-30, 38, 0], size: [12, 1, 12], color: '#34495e', type: 'normal' },
-  { position: [-45, 40, -10], size: [10, 1, 10], color: '#2c3e50', type: 'normal' },
-  { position: [-55, 42, 5], size: [15, 1, 15], color: '#27ae60', type: 'jump' },
-  { position: [-65, 45, 20], size: [10, 1, 10], color: '#2c3e50', type: 'normal' },
-  { position: [-60, 48, 35], size: [12, 1, 12], color: '#34495e', type: 'normal' },
-  { position: [-45, 50, 45], size: [10, 1, 10], color: '#2c3e50', type: 'normal' },
-  { position: [-30, 52, 40], size: [15, 1, 15], color: '#e74c3c', type: 'jump' },
-  { position: [-15, 55, 35], size: [10, 1, 10], color: '#2c3e50', type: 'normal' },
-  { position: [0, 57, 30], size: [12, 1, 12], color: '#34495e', type: 'normal' },
-  { position: [15, 59, 25], size: [10, 1, 10], color: '#2c3e50', type: 'normal' },
-  { position: [30, 61, 20], size: [15, 1, 15], color: '#27ae60', type: 'jump' },
-  { position: [45, 63, 15], size: [20, 1, 20], color: '#f39c12', type: 'normal' },
-  { position: [10, 10, 20], size: [8, 1, 8], color: '#34495e', type: 'normal' },
-  { position: [-20, 15, -20], size: [10, 1, 10], color: '#2c3e50', type: 'normal' },
-  { position: [20, 20, -30], size: [8, 1, 8], color: '#e74c3c', type: 'jump' },
-  { position: [-40, 25, 15], size: [12, 1, 12], color: '#34495e', type: 'normal' },
-  { position: [-10, 45, -15], size: [10, 1, 10], color: '#2c3e50', type: 'normal' },
-  { position: [35, 40, 5], size: [8, 1, 8], color: '#27ae60', type: 'jump' },
+  // Ground area
+  { position: [0, -0.5, 0], size: [40, 1, 40], color: '#4a5568', type: 'normal' },
+  
+  // Building 1 - Left side complex
+  { position: [-20, 5, 0], size: [15, 10, 20], color: '#34495e', type: 'building' },
+  { position: [-20, 10.5, 0], size: [15, 1, 20], color: '#2c3e50', type: 'normal' },
+  { position: [-27.5, 5, 0], size: [1, 10, 20], color: '#2c3e50', type: 'wall' },
+  { position: [-12.5, 5, 0], size: [1, 10, 20], color: '#2c3e50', type: 'wall' },
+  
+  // Building 2 - Right side complex
+  { position: [20, 8, 0], size: [18, 16, 22], color: '#2d3436', type: 'building' },
+  { position: [20, 16.5, 0], size: [18, 1, 22], color: '#2c3e50', type: 'normal' },
+  { position: [29, 8, 0], size: [1, 16, 22], color: '#2c3e50', type: 'wall' },
+  { position: [11, 8, 0], size: [1, 16, 22], color: '#2c3e50', type: 'wall' },
+  
+  // Central tower
+  { position: [0, 15, -30], size: [12, 30, 12], color: '#34495e', type: 'building' },
+  { position: [0, 30.5, -30], size: [12, 1, 12], color: '#e74c3c', type: 'jump' },
+  { position: [-6, 15, -30], size: [1, 30, 12], color: '#2c3e50', type: 'wall' },
+  { position: [6, 15, -30], size: [1, 30, 12], color: '#2c3e50', type: 'wall' },
+  
+  // Connection platforms
+  { position: [10, 12, -15], size: [8, 1, 8], color: '#2c3e50', type: 'normal' },
+  { position: [-10, 14, -15], size: [8, 1, 8], color: '#2c3e50', type: 'normal' },
+  
+  // Building 3 - Back complex
+  { position: [25, 18, -40], size: [16, 36, 18], color: '#2d3436', type: 'building' },
+  { position: [25, 36.5, -40], size: [16, 1, 18], color: '#27ae60', type: 'jump' },
+  { position: [33, 18, -40], size: [1, 36, 18], color: '#2c3e50', type: 'wall' },
+  { position: [17, 18, -40], size: [1, 36, 18], color: '#2c3e50', type: 'wall' },
+  
+  // Building 4 - Left back
+  { position: [-25, 22, -40], size: [14, 44, 16], color: '#34495e', type: 'building' },
+  { position: [-25, 44.5, -40], size: [14, 1, 16], color: '#27ae60', type: 'jump' },
+  { position: [-32, 22, -40], size: [1, 44, 16], color: '#2c3e50', type: 'wall' },
+  { position: [-18, 22, -40], size: [1, 44, 16], color: '#2c3e50', type: 'wall' },
+  
+  // Parkour course platforms
+  { position: [15, 20, -20], size: [6, 1, 6], color: '#e74c3c', type: 'jump' },
+  { position: [-15, 24, -25], size: [6, 1, 6], color: '#e74c3c', type: 'jump' },
+  { position: [0, 38, -45], size: [8, 1, 8], color: '#27ae60', type: 'jump' },
+  
+  // Standalone walls for wallrunning
+  { position: [0, 10, 15], size: [25, 20, 1], color: '#2c3e50', type: 'wall' },
+  { position: [30, 12, -10], size: [1, 24, 20], color: '#2c3e50', type: 'wall' },
+  { position: [-30, 15, -10], size: [1, 30, 20], color: '#2c3e50', type: 'wall' },
+  
+  // High platforms for advanced parkour
+  { position: [0, 50, -55], size: [10, 1, 10], color: '#f39c12', type: 'normal' },
+  { position: [15, 55, -60], size: [8, 1, 8], color: '#f39c12', type: 'normal' },
+  { position: [-15, 60, -60], size: [8, 1, 8], color: '#f39c12', type: 'normal' },
 ]
 
 interface TrickInfo {
@@ -51,89 +73,242 @@ interface TrickInfo {
   timestamp: number
 }
 
-function FirstPersonHands() {
-  const { camera } = useThree()
+function AdvancedFirstPersonCamera({ 
+  speed, 
+  isWallrunning, 
+  wallrunSide
+}: { 
+  speed: number
+  isWallrunning: boolean
+  wallrunSide: 'left' | 'right' | null
+}) {
+  const targetFov = useRef(80)
+  const currentFov = useRef(80)
+  const tiltAmount = useRef(0)
+  const bobTime = useRef(0)
+  
+  useFrame((state, delta) => {
+    const cam = state.camera as THREE.PerspectiveCamera
+    
+    targetFov.current = 80 + Math.min(speed * 0.4, 30)
+    currentFov.current += (targetFov.current - currentFov.current) * delta * 5
+    cam.fov = currentFov.current
+    cam.updateProjectionMatrix()
+    
+    if (isWallrunning && wallrunSide) {
+      const targetTilt = wallrunSide === 'left' ? 0.3 : -0.3
+      tiltAmount.current += (targetTilt - tiltAmount.current) * delta * 8
+    } else {
+      tiltAmount.current += (0 - tiltAmount.current) * delta * 10
+    }
+    
+    cam.rotation.z = tiltAmount.current
+    
+    if (speed > 1) {
+      bobTime.current += delta * speed * 0.15
+      const bobY = Math.sin(bobTime.current) * 0.015
+      const bobX = Math.cos(bobTime.current * 0.5) * 0.01
+      cam.position.y += bobY
+      cam.position.x += bobX
+    }
+  })
+  
+  return null
+}
+
+function FirstPersonHands({ 
+  speed, 
+  isGrounded, 
+  isWallrunning, 
+  isGrappling,
+  wallrunSide 
+}: { 
+  speed: number
+  isGrounded: boolean
+  isWallrunning: boolean
+  isGrappling: boolean
+  wallrunSide: 'left' | 'right' | null
+}) {
   const leftHandRef = useRef<THREE.Group>(null)
   const rightHandRef = useRef<THREE.Group>(null)
   const bobTime = useRef(0)
   
   useFrame((state, delta) => {
-    bobTime.current += delta * 5
+    if (!leftHandRef.current || !rightHandRef.current) return
     
-    if (leftHandRef.current && rightHandRef.current) {
-      const bobAmount = Math.sin(bobTime.current) * 0.02
+    // Running animation
+    if (isGrounded && speed > 1) {
+      bobTime.current += delta * speed * 0.3
       
-      leftHandRef.current.position.set(-0.3, -0.5 + bobAmount, -0.8)
+      const leftBob = Math.sin(bobTime.current) * 0.08
+      const rightBob = Math.sin(bobTime.current + Math.PI) * 0.08
+      const swingX = Math.cos(bobTime.current) * 0.1
+      
+      leftHandRef.current.position.set(-0.35 + swingX, -0.45 + leftBob, -0.8)
+      leftHandRef.current.rotation.set(0.2 + leftBob * 2, 0.3, 0.1 + swingX)
+      
+      rightHandRef.current.position.set(0.35 - swingX, -0.45 + rightBob, -0.8)
+      rightHandRef.current.rotation.set(0.2 + rightBob * 2, -0.3, -0.1 - swingX)
+    }
+    // Wallrun animation
+    else if (isWallrunning) {
+      const targetLeftPos = wallrunSide === 'left' ? 
+        new THREE.Vector3(-0.5, -0.3, -0.7) : 
+        new THREE.Vector3(-0.3, -0.5, -0.9)
+      const targetRightPos = wallrunSide === 'right' ? 
+        new THREE.Vector3(0.5, -0.3, -0.7) : 
+        new THREE.Vector3(0.3, -0.5, -0.9)
+      
+      leftHandRef.current.position.lerp(targetLeftPos, delta * 10)
+      rightHandRef.current.position.lerp(targetRightPos, delta * 10)
+      
+      leftHandRef.current.rotation.set(0.1, 0.5, wallrunSide === 'left' ? 0.5 : 0)
+      rightHandRef.current.rotation.set(0.1, -0.5, wallrunSide === 'right' ? -0.5 : 0)
+    }
+    // Grappling animation
+    else if (isGrappling) {
+      bobTime.current += delta * 8
+      const grapplingBob = Math.sin(bobTime.current) * 0.03
+      
+      leftHandRef.current.position.set(-0.25, -0.35 + grapplingBob, -0.7)
+      leftHandRef.current.rotation.set(-0.2, 0.4, 0.2)
+      
+      rightHandRef.current.position.set(0.45, -0.25 - grapplingBob, -0.6)
+      rightHandRef.current.rotation.set(-0.3, -0.2, -0.1)
+    }
+    // Idle/air animation
+    else {
+      bobTime.current += delta * 3
+      const idleBob = Math.sin(bobTime.current) * 0.01
+      
+      leftHandRef.current.position.set(-0.3, -0.5 + idleBob, -0.8)
       leftHandRef.current.rotation.set(0.2, 0.3, 0.1)
       
-      rightHandRef.current.position.set(0.3, -0.5 - bobAmount, -0.8)
+      rightHandRef.current.position.set(0.3, -0.5 - idleBob, -0.8)
       rightHandRef.current.rotation.set(0.2, -0.3, -0.1)
     }
   })
   
   return (
     <group>
+      {/* Left Hand */}
       <group ref={leftHandRef}>
-        <mesh>
-          <boxGeometry args={[0.08, 0.2, 0.08]} />
-          <meshStandardMaterial color="#d4a574" />
+        <mesh castShadow>
+          <boxGeometry args={[0.1, 0.25, 0.1]} />
+          <meshStandardMaterial color="#d4a574" roughness={0.8} />
         </mesh>
-        <mesh position={[0, -0.15, 0]}>
-          <boxGeometry args={[0.1, 0.05, 0.15]} />
-          <meshStandardMaterial color="#d4a574" />
+        <mesh position={[0, -0.18, 0]} castShadow>
+          <boxGeometry args={[0.12, 0.08, 0.18]} />
+          <meshStandardMaterial color="#d4a574" roughness={0.8} />
+        </mesh>
+        {/* Fingers */}
+        <mesh position={[0.03, -0.24, 0.05]} castShadow>
+          <boxGeometry args={[0.02, 0.06, 0.02]} />
+          <meshStandardMaterial color="#d4a574" roughness={0.8} />
+        </mesh>
+        <mesh position={[0, -0.24, 0.05]} castShadow>
+          <boxGeometry args={[0.02, 0.06, 0.02]} />
+          <meshStandardMaterial color="#d4a574" roughness={0.8} />
         </mesh>
       </group>
       
+      {/* Right Hand */}
       <group ref={rightHandRef}>
-        <mesh>
-          <boxGeometry args={[0.08, 0.2, 0.08]} />
-          <meshStandardMaterial color="#d4a574" />
+        <mesh castShadow>
+          <boxGeometry args={[0.1, 0.25, 0.1]} />
+          <meshStandardMaterial color="#d4a574" roughness={0.8} />
         </mesh>
-        <mesh position={[0, -0.15, 0]}>
-          <boxGeometry args={[0.1, 0.05, 0.15]} />
-          <meshStandardMaterial color="#d4a574" />
+        <mesh position={[0, -0.18, 0]} castShadow>
+          <boxGeometry args={[0.12, 0.08, 0.18]} />
+          <meshStandardMaterial color="#d4a574" roughness={0.8} />
+        </mesh>
+        {/* Fingers */}
+        <mesh position={[-0.03, -0.24, 0.05]} castShadow>
+          <boxGeometry args={[0.02, 0.06, 0.02]} />
+          <meshStandardMaterial color="#d4a574" roughness={0.8} />
+        </mesh>
+        <mesh position={[0, -0.24, 0.05]} castShadow>
+          <boxGeometry args={[0.02, 0.06, 0.02]} />
+          <meshStandardMaterial color="#d4a574" roughness={0.8} />
         </mesh>
       </group>
     </group>
   )
 }
 
-function GrapplingHookModel({ isGrappling, grapplePoint }: { isGrappling: boolean, grapplePoint: THREE.Vector3 | null }) {
+function GrapplingHookModel({ 
+  isGrappling, 
+  grapplePoint,
+  isFiring 
+}: { 
+  isGrappling: boolean
+  grapplePoint: THREE.Vector3 | null
+  isFiring: boolean
+}) {
   const { camera } = useThree()
   const hookRef = useRef<THREE.Group>(null)
+  const animationTime = useRef(0)
   
-  useFrame(() => {
-    if (hookRef.current) {
-      if (isGrappling && grapplePoint) {
-        const direction = new THREE.Vector3()
-        direction.subVectors(grapplePoint, camera.position).normalize()
-        hookRef.current.position.set(0.4, -0.3, -0.6)
-        hookRef.current.lookAt(direction)
-        hookRef.current.rotateX(Math.PI / 4)
-      } else {
-        hookRef.current.position.set(0.4, -0.4, -0.7)
-        hookRef.current.rotation.set(0, 0, 0)
-      }
+  useFrame((state, delta) => {
+    if (!hookRef.current) return
+    
+    if (isGrappling && grapplePoint) {
+      const direction = new THREE.Vector3()
+      direction.subVectors(grapplePoint, camera.position).normalize()
+      
+      hookRef.current.position.set(0.45, -0.25, -0.6)
+      hookRef.current.lookAt(camera.position.clone().add(direction))
+      hookRef.current.rotateX(Math.PI / 4)
+      
+      // Recoil animation
+      animationTime.current += delta * 10
+      const recoil = Math.max(0, 1 - animationTime.current * 0.5)
+      hookRef.current.position.x -= recoil * 0.1
+    } else if (isFiring) {
+      animationTime.current = 0
+      hookRef.current.position.set(0.45, -0.3, -0.65)
+      hookRef.current.rotation.set(-0.2, 0, 0)
+    } else {
+      hookRef.current.position.set(0.45, -0.35, -0.7)
+      hookRef.current.rotation.set(0, 0, 0)
+      animationTime.current = 0
     }
   })
   
   return (
     <group ref={hookRef}>
-      <mesh>
-        <cylinderGeometry args={[0.03, 0.03, 0.3, 8]} />
+      {/* Handle */}
+      <mesh castShadow>
+        <cylinderGeometry args={[0.04, 0.04, 0.25, 8]} />
+        <meshStandardMaterial color="#1a1a1a" metalness={0.3} roughness={0.7} />
+      </mesh>
+      
+      {/* Barrel */}
+      <mesh position={[0, 0.18, 0]} castShadow>
+        <cylinderGeometry args={[0.03, 0.035, 0.15, 8]} />
+        <meshStandardMaterial color="#333333" metalness={0.8} roughness={0.2} />
+      </mesh>
+      
+      {/* Hook tip */}
+      <mesh position={[0, 0.25, 0]} castShadow>
+        <coneGeometry args={[0.06, 0.12, 8]} />
+        <meshStandardMaterial color="#666666" metalness={0.9} roughness={0.1} />
+      </mesh>
+      
+      {/* Hook prongs */}
+      <mesh position={[0.05, 0.3, 0]} rotation={[0, 0, Math.PI / 3]} castShadow>
+        <boxGeometry args={[0.1, 0.025, 0.025]} />
         <meshStandardMaterial color="#555555" metalness={0.8} roughness={0.2} />
       </mesh>
-      <mesh position={[0, 0.15, 0]}>
-        <coneGeometry args={[0.05, 0.1, 8]} />
-        <meshStandardMaterial color="#888888" metalness={0.9} roughness={0.1} />
+      <mesh position={[-0.05, 0.3, 0]} rotation={[0, 0, -Math.PI / 3]} castShadow>
+        <boxGeometry args={[0.1, 0.025, 0.025]} />
+        <meshStandardMaterial color="#555555" metalness={0.8} roughness={0.2} />
       </mesh>
-      <mesh position={[0.04, 0.18, 0]} rotation={[0, 0, Math.PI / 4]}>
-        <boxGeometry args={[0.08, 0.02, 0.02]} />
-        <meshStandardMaterial color="#666666" metalness={0.8} roughness={0.2} />
-      </mesh>
-      <mesh position={[-0.04, 0.18, 0]} rotation={[0, 0, -Math.PI / 4]}>
-        <boxGeometry args={[0.08, 0.02, 0.02]} />
-        <meshStandardMaterial color="#666666" metalness={0.8} roughness={0.2} />
+      
+      {/* Details */}
+      <mesh position={[0, 0.05, 0]} castShadow>
+        <torusGeometry args={[0.045, 0.01, 8, 16]} />
+        <meshStandardMaterial color="#ff4444" metalness={0.9} roughness={0.1} />
       </mesh>
     </group>
   )
@@ -145,29 +320,57 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
   const [isGrappling, setIsGrappling] = useState(false)
   const [grapplePoint, setGrapplePoint] = useState<THREE.Vector3 | null>(null)
   const [grappleRope, setGrappleRope] = useState<[THREE.Vector3, THREE.Vector3] | null>(null)
+  const [isWallrunning, setIsWallrunning] = useState(false)
+  const [wallrunSide, setWallrunSide] = useState<'left' | 'right' | null>(null)
+  const [isFiring, setIsFiring] = useState(false)
+  const [isGrounded, setIsGrounded] = useState(false)
   const keysPressed = useRef<Set<string>>(new Set())
   const isGroundedRef = useRef(false)
   const lastJumpTime = useRef(0)
   const lastGrappleTime = useRef(0)
+  const wallrunTimeRef = useRef(0)
   const airTimeRef = useRef(0)
   const lastSpeedCheck = useRef(0)
-  const rotationRef = useRef({ x: 0, y: 0, z: 0 })
   const lastTrickTime = useRef(0)
+  const [currentSpeed, setCurrentSpeed] = useState(0)
   
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       keysPressed.current.add(e.code)
       
-      if (e.code === 'Space' && isGroundedRef.current && Date.now() - lastJumpTime.current > 300) {
-        velocityRef.current.y = 12
-        isGroundedRef.current = false
-        lastJumpTime.current = Date.now()
+      // Jump
+      if (e.code === 'Space') {
+        if (isGroundedRef.current && Date.now() - lastJumpTime.current > 300) {
+          velocityRef.current.y = 12
+          isGroundedRef.current = false
+          lastJumpTime.current = Date.now()
+        }
+        // Wall jump
+        else if (isWallrunning && Date.now() - lastJumpTime.current > 300) {
+          velocityRef.current.y = 14
+          const jumpDirection = wallrunSide === 'left' ? 1 : -1
+          
+          const right = new THREE.Vector3()
+          const forward = new THREE.Vector3()
+          camera.getWorldDirection(forward)
+          right.crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize()
+          
+          velocityRef.current.x += right.x * jumpDirection * 15
+          velocityRef.current.z += right.z * jumpDirection * 15
+          
+          setIsWallrunning(false)
+          setWallrunSide(null)
+          lastJumpTime.current = Date.now()
+          onTrick({ name: 'Wall Jump!', points: 100, timestamp: Date.now() })
+        }
       }
       
+      // Grapple
       if (e.code === 'KeyE') {
         handleGrapple()
       }
       
+      // Tricks
       if (!isGroundedRef.current && Date.now() - lastTrickTime.current > 1000) {
         if (e.code === 'KeyQ') {
           onTrick({ name: 'Barrel Roll', points: 100, timestamp: Date.now() })
@@ -199,25 +402,22 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
     }
     
     const handleGrapple = () => {
-      if (Date.now() - lastGrappleTime.current < 100) return
+      if (Date.now() - lastGrappleTime.current < 500) return
       lastGrappleTime.current = Date.now()
+      setIsFiring(true)
+      setTimeout(() => setIsFiring(false), 200)
       
       const raycaster = new THREE.Raycaster()
       raycaster.setFromCamera(new THREE.Vector2(0, 0), camera)
       
       const intersects: THREE.Intersection[] = []
       platforms.forEach((platform) => {
+        const [px, py, pz] = platform.position
+        const [sx, sy, sz] = platform.size
+        
         const box = new THREE.Box3(
-          new THREE.Vector3(
-            platform.position[0] - platform.size[0] / 2,
-            platform.position[1] - platform.size[1] / 2,
-            platform.position[2] - platform.size[2] / 2
-          ),
-          new THREE.Vector3(
-            platform.position[0] + platform.size[0] / 2,
-            platform.position[1] + platform.size[1] / 2,
-            platform.position[2] + platform.size[2] / 2
-          )
+          new THREE.Vector3(px - sx / 2, py - sy / 2, pz - sz / 2),
+          new THREE.Vector3(px + sx / 2, py + sy / 2, pz + sz / 2)
         )
         
         const intersection = raycaster.ray.intersectBox(box, new THREE.Vector3())
@@ -254,12 +454,12 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
       window.removeEventListener('keyup', handleKeyUp)
       window.removeEventListener('mousedown', handleMouseDown)
     }
-  }, [camera, onTrick])
+  }, [camera, onTrick, isWallrunning, wallrunSide])
   
   useFrame((state, delta) => {
     const speed = 15
     const airControl = 0.4
-    const controlFactor = isGroundedRef.current ? 1 : airControl
+    const controlFactor = isGroundedRef.current ? 1 : (isWallrunning ? 0.8 : airControl)
     
     const forward = new THREE.Vector3()
     camera.getWorldDirection(forward)
@@ -281,6 +481,7 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
       velocityRef.current.z += moveDirection.z * speed * delta * controlFactor
     }
     
+    // Grappling hook physics
     if (isGrappling && grapplePoint) {
       const toGrapple = new THREE.Vector3()
       toGrapple.subVectors(grapplePoint, camera.position)
@@ -290,7 +491,6 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
         toGrapple.normalize()
         const pullStrength = 45
         velocityRef.current.add(toGrapple.multiplyScalar(pullStrength * delta))
-        
         setGrappleRope([camera.position.clone(), grapplePoint.clone()])
       } else {
         setIsGrappling(false)
@@ -301,16 +501,80 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
       setGrappleRope(null)
     }
     
+    // Wallrunning detection and physics
+    if (!isGroundedRef.current && !isGrappling) {
+      let foundWall = false
+      
+      for (const platform of platforms) {
+        if (platform.type !== 'wall') continue
+        
+        const [px, py, pz] = platform.position
+        const [sx, sy, sz] = platform.size
+        
+        const distanceToWall = Math.min(
+          Math.abs(camera.position.x - (px - sx / 2)),
+          Math.abs(camera.position.x - (px + sx / 2)),
+          Math.abs(camera.position.z - (pz - sz / 2)),
+          Math.abs(camera.position.z - (pz + sz / 2))
+        )
+        
+        if (distanceToWall < 2.5 && 
+            camera.position.y > py - sy / 2 && 
+            camera.position.y < py + sy / 2) {
+          
+          const horizontalSpeed = Math.sqrt(velocityRef.current.x ** 2 + velocityRef.current.z ** 2)
+          
+          if (horizontalSpeed > 5) {
+            foundWall = true
+            
+            if (!isWallrunning) {
+              setIsWallrunning(true)
+              wallrunTimeRef.current = 0
+              onTrick({ name: 'Wallrun!', points: 75, timestamp: Date.now() })
+            }
+            
+            // Determine wall side
+            const toWall = new THREE.Vector3(px - camera.position.x, 0, pz - camera.position.z)
+            const cross = forward.clone().cross(toWall)
+            setWallrunSide(cross.y > 0 ? 'right' : 'left')
+            
+            wallrunTimeRef.current += delta
+            
+            // Wallrun physics
+            velocityRef.current.y = Math.max(velocityRef.current.y, -2)
+            
+            if (wallrunTimeRef.current < 2.5) {
+              velocityRef.current.y += 8 * delta
+            }
+            
+            break
+          }
+        }
+      }
+      
+      if (!foundWall && isWallrunning) {
+        setIsWallrunning(false)
+        setWallrunSide(null)
+      }
+    } else if (isGroundedRef.current && isWallrunning) {
+      setIsWallrunning(false)
+      setWallrunSide(null)
+    }
+    
+    // Gravity
     if (!isGrappling) {
-      velocityRef.current.y -= 30 * delta
+      const gravityMultiplier = isWallrunning ? 0.3 : 1
+      velocityRef.current.y -= 30 * delta * gravityMultiplier
     } else {
       velocityRef.current.y -= 10 * delta
     }
     
-    const friction = isGroundedRef.current ? 0.82 : 0.99
+    // Friction
+    const friction = isGroundedRef.current ? 0.82 : (isWallrunning ? 0.95 : 0.99)
     velocityRef.current.x *= friction
     velocityRef.current.z *= friction
     
+    // Speed limit
     const maxHorizontalSpeed = 50
     const horizontalSpeed = Math.sqrt(velocityRef.current.x ** 2 + velocityRef.current.z ** 2)
     if (horizontalSpeed > maxHorizontalSpeed) {
@@ -319,18 +583,24 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
       velocityRef.current.z *= scale
     }
     
+    // Update speed display
     if (Date.now() - lastSpeedCheck.current > 100) {
+      setCurrentSpeed(horizontalSpeed)
       onSpeedUpdate(horizontalSpeed)
       lastSpeedCheck.current = Date.now()
     }
     
+    // Movement and collision
     const nextPosition = camera.position.clone()
     nextPosition.add(velocityRef.current.clone().multiplyScalar(delta))
     
     const wasGrounded = isGroundedRef.current
     isGroundedRef.current = false
+    let newGroundedState = false
     
     platforms.forEach((platform) => {
+      if (platform.type === 'building' || platform.type === 'wall') return
+      
       const [px, py, pz] = platform.position
       const [sx, sy, sz] = platform.size
       
@@ -364,6 +634,7 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
           }
           
           isGroundedRef.current = true
+          newGroundedState = true
           
           if (!wasGrounded && airTimeRef.current > 2) {
             const landingSpeed = horizontalSpeed
@@ -379,7 +650,8 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
             setGrapplePoint(null)
             setGrappleRope(null)
           }
-        } else if (
+        }
+        else if (
           camera.position.y + playerHeight / 2 <= minY &&
           nextPosition.y + playerHeight / 2 > minY
         ) {
@@ -389,16 +661,21 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
       }
     })
     
+    setIsGrounded(newGroundedState)
+    
     if (!isGroundedRef.current) {
       airTimeRef.current += delta
     }
     
+    // Respawn if fallen
     if (nextPosition.y < -30) {
       nextPosition.set(0, 10, 0)
       velocityRef.current.set(0, 0, 0)
       setIsGrappling(false)
       setGrapplePoint(null)
       setGrappleRope(null)
+      setIsWallrunning(false)
+      setWallrunSide(null)
     }
     
     camera.position.copy(nextPosition)
@@ -406,59 +683,188 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
   
   return (
     <>
-      <FirstPersonHands />
-      <GrapplingHookModel isGrappling={isGrappling} grapplePoint={grapplePoint} />
+      <AdvancedFirstPersonCamera 
+        speed={currentSpeed} 
+        isWallrunning={isWallrunning}
+        wallrunSide={wallrunSide}
+      />
+      <FirstPersonHands 
+        speed={currentSpeed}
+        isGrounded={isGrounded}
+        isWallrunning={isWallrunning}
+        isGrappling={isGrappling}
+        wallrunSide={wallrunSide}
+      />
+      <GrapplingHookModel 
+        isGrappling={isGrappling} 
+        grapplePoint={grapplePoint}
+        isFiring={isFiring}
+      />
       {grappleRope && (() => {
         const points = []
-        points.push(grappleRope[0])
-        points.push(grappleRope[1])
+        const segments = 10
+        for (let i = 0; i <= segments; i++) {
+          const t = i / segments
+          const point = new THREE.Vector3()
+          point.lerpVectors(grappleRope[0], grappleRope[1], t)
+          const sag = Math.sin(t * Math.PI) * Math.min(grappleRope[0].distanceTo(grappleRope[1]) * 0.1, 3)
+          point.y -= sag
+          points.push(point)
+        }
         const geometry = new THREE.BufferGeometry().setFromPoints(points)
         return (
-          <primitive object={new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: '#00ff00', linewidth: 3 }))} />
+          <primitive object={new THREE.Line(geometry, new THREE.LineBasicMaterial({ 
+            color: '#00ff88', 
+            linewidth: 2 
+          }))} />
         )
       })()}
       {grapplePoint && (
         <mesh position={[grapplePoint.x, grapplePoint.y, grapplePoint.z]}>
           <sphereGeometry args={[0.3, 16, 16]} />
-          <meshStandardMaterial color="#00ff00" emissive="#00ff00" emissiveIntensity={1} />
+          <meshStandardMaterial 
+            color="#00ff88" 
+            emissive="#00ff88" 
+            emissiveIntensity={2}
+            transparent
+            opacity={0.8}
+          />
         </mesh>
       )}
     </>
   )
 }
 
-function Platforms() {
+function RealisticEnvironment() {
   return (
     <>
-      {platforms.map((platform, index) => (
-        <group key={index}>
-          <mesh position={platform.position} receiveShadow castShadow>
-            <boxGeometry args={platform.size} />
-            <meshStandardMaterial 
-              color={platform.color} 
-              emissive={platform.type === 'jump' ? platform.color : '#000000'}
-              emissiveIntensity={platform.type === 'jump' ? 0.3 : 0}
-            />
-          </mesh>
-          {platform.type === 'jump' && (
-            <mesh position={[platform.position[0], platform.position[1] + 0.6, platform.position[2]]}>
-              <coneGeometry args={[0.5, 1, 4]} />
+      {platforms.map((platform, index) => {
+        const isBuilding = platform.type === 'building'
+        const isWall = platform.type === 'wall'
+        const isJump = platform.type === 'jump'
+        
+        return (
+          <group key={index}>
+            <mesh 
+              position={platform.position} 
+              rotation={platform.rotation || [0, 0, 0]}
+              receiveShadow 
+              castShadow
+            >
+              <boxGeometry args={platform.size} />
               <meshStandardMaterial 
-                color="#ffff00" 
-                emissive="#ffff00" 
-                emissiveIntensity={0.5}
-                transparent
-                opacity={0.7}
+                color={platform.color}
+                metalness={isBuilding ? 0.3 : isWall ? 0.5 : 0.2}
+                roughness={isBuilding ? 0.8 : isWall ? 0.6 : 0.9}
+                emissive={isJump ? platform.color : '#000000'}
+                emissiveIntensity={isJump ? 0.4 : 0}
               />
             </mesh>
-          )}
-        </group>
-      ))}
+            
+            {/* Window details for buildings */}
+            {isBuilding && (() => {
+              const windows = []
+              const [sx, sy, sz] = platform.size
+              const [px, py, pz] = platform.position
+              
+              const windowsX = Math.floor(sx / 3)
+              const windowsY = Math.floor(sy / 3)
+              
+              for (let i = 0; i < windowsX; i++) {
+                for (let j = 0; j < windowsY; j++) {
+                  const x = px - sx / 2 + (i + 0.5) * (sx / windowsX)
+                  const y = py - sy / 2 + (j + 0.5) * (sy / windowsY)
+                  
+                  // Front face
+                  windows.push(
+                    <mesh key={`f-${i}-${j}`} position={[x, y, pz + sz / 2 + 0.1]} castShadow>
+                      <boxGeometry args={[1, 1.2, 0.1]} />
+                      <meshStandardMaterial 
+                        color="#87ceeb" 
+                        emissive="#4a90a4"
+                        emissiveIntensity={0.3}
+                        metalness={0.9}
+                        roughness={0.1}
+                      />
+                    </mesh>
+                  )
+                  
+                  // Back face
+                  windows.push(
+                    <mesh key={`b-${i}-${j}`} position={[x, y, pz - sz / 2 - 0.1]} castShadow>
+                      <boxGeometry args={[1, 1.2, 0.1]} />
+                      <meshStandardMaterial 
+                        color="#87ceeb" 
+                        emissive="#4a90a4"
+                        emissiveIntensity={0.3}
+                        metalness={0.9}
+                        roughness={0.1}
+                      />
+                    </mesh>
+                  )
+                }
+              }
+              
+              return <>{windows}</>
+            })()}
+            
+            {/* Jump pad indicator */}
+            {isJump && (
+              <mesh position={[platform.position[0], platform.position[1] + 0.6, platform.position[2]]}>
+                <coneGeometry args={[0.8, 1.5, 4]} />
+                <meshStandardMaterial 
+                  color="#ffff00" 
+                  emissive="#ffff00" 
+                  emissiveIntensity={0.8}
+                  transparent
+                  opacity={0.7}
+                />
+              </mesh>
+            )}
+            
+            {/* Wall grip indicators */}
+            {isWall && (() => {
+              const grips = []
+              const [sx, sy, sz] = platform.size
+              const [px, py, pz] = platform.position
+              const count = 8
+              
+              for (let i = 0; i < count; i++) {
+                const offset = (i / count) * Math.max(sx, sy, sz)
+                grips.push(
+                  <mesh 
+                    key={i} 
+                    position={[
+                      px + (sx > 1 ? -sx / 2 + offset : 0),
+                      py + (sy > 1 ? -sy / 2 + offset : 0),
+                      pz + (sz > 1 ? -sz / 2 + offset : 0)
+                    ]}
+                    castShadow
+                  >
+                    <boxGeometry args={[0.3, 0.3, 0.3]} />
+                    <meshStandardMaterial 
+                      color="#ff6b6b" 
+                      emissive="#ff6b6b"
+                      emissiveIntensity={0.2}
+                      roughness={0.8}
+                    />
+                  </mesh>
+                )
+              }
+              return <>{grips}</>
+            })()}
+          </group>
+        )
+      })}
       
+      {/* Ground plane */}
       <mesh position={[0, -10, 0]} receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[500, 500]} />
-        <meshStandardMaterial color="#1a1a2e" />
+        <meshStandardMaterial color="#1a1a2e" roughness={0.9} />
       </mesh>
+      
+      {/* Fog effect */}
+      <fog attach="fog" args={['#0d1117', 50, 200]} />
     </>
   )
 }
@@ -512,20 +918,20 @@ function HUD({ speed, tricks, score }: { speed: number, tricks: TrickInfo[], sco
       <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-sm text-white p-3 rounded-lg border border-green-500/50">
         <div className="text-green-400 font-mono text-xs mb-2">CONTROLS</div>
         <div className="text-xs space-y-1">
-          <div className="flex gap-2"><span className="text-gray-400">Q</span> Barrel Roll</div>
-          <div className="flex gap-2"><span className="text-gray-400">Z</span> Front Flip</div>
-          <div className="flex gap-2"><span className="text-gray-400">X</span> Back Flip</div>
-          <div className="flex gap-2"><span className="text-gray-400">C</span> 360 Spin</div>
+          <div className="flex gap-2"><span className="text-gray-400">WASD</span> Move</div>
+          <div className="flex gap-2"><span className="text-gray-400">Space</span> Jump/Wall Jump</div>
+          <div className="flex gap-2"><span className="text-gray-400">E/Click</span> Grapple</div>
+          <div className="flex gap-2"><span className="text-gray-400">Q/Z/X/C</span> Air Tricks</div>
         </div>
       </div>
       
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
         <div className="relative w-8 h-8">
-          <div className="absolute left-1/2 top-1/2 w-0.5 h-3 bg-white -translate-x-1/2 -translate-y-full shadow-lg" />
-          <div className="absolute left-1/2 top-1/2 w-0.5 h-3 bg-white -translate-x-1/2 shadow-lg" />
-          <div className="absolute left-1/2 top-1/2 w-3 h-0.5 bg-white -translate-y-1/2 -translate-x-full shadow-lg" />
-          <div className="absolute left-1/2 top-1/2 w-3 h-0.5 bg-white -translate-y-1/2 shadow-lg" />
-          <div className="absolute left-1/2 top-1/2 w-1.5 h-1.5 border-2 border-white rounded-full -translate-x-1/2 -translate-y-1/2 shadow-lg" />
+          <div className="absolute left-1/2 top-1/2 w-0.5 h-3 bg-cyan-400 -translate-x-1/2 -translate-y-full shadow-lg shadow-cyan-500/50" />
+          <div className="absolute left-1/2 top-1/2 w-0.5 h-3 bg-cyan-400 -translate-x-1/2 shadow-lg shadow-cyan-500/50" />
+          <div className="absolute left-1/2 top-1/2 w-3 h-0.5 bg-cyan-400 -translate-y-1/2 -translate-x-full shadow-lg shadow-cyan-500/50" />
+          <div className="absolute left-1/2 top-1/2 w-3 h-0.5 bg-cyan-400 -translate-y-1/2 shadow-lg shadow-cyan-500/50" />
+          <div className="absolute left-1/2 top-1/2 w-1.5 h-1.5 border-2 border-cyan-400 rounded-full -translate-x-1/2 -translate-y-1/2 shadow-lg shadow-cyan-500/50" />
         </div>
       </div>
     </div>
@@ -536,7 +942,7 @@ function Instructions() {
   const [show, setShow] = useState(true)
   
   useEffect(() => {
-    const timer = setTimeout(() => setShow(false), 10000)
+    const timer = setTimeout(() => setShow(false), 12000)
     return () => clearTimeout(timer)
   }, [])
   
@@ -544,14 +950,14 @@ function Instructions() {
   
   return (
     <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/90 text-white px-8 py-6 rounded-lg z-40 backdrop-blur-sm border-2 border-cyan-500 max-w-lg">
-      <h2 className="font-bold text-2xl mb-4 text-center text-cyan-400">🎮 PARKOUR MASTER 🎮</h2>
+      <h2 className="font-bold text-2xl mb-4 text-center text-cyan-400">🎮 ADVANCED PARKOUR MASTER 🎮</h2>
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div className="space-y-2">
           <h3 className="font-bold text-green-400 mb-2">Movement</h3>
           <p><strong className="text-cyan-300">WASD:</strong> Move</p>
           <p><strong className="text-cyan-300">Mouse:</strong> Look</p>
           <p><strong className="text-cyan-300">Space:</strong> Jump</p>
-          <p><strong className="text-cyan-300">Click/E:</strong> Grapple</p>
+          <p><strong className="text-cyan-300">Click/E:</strong> Grapple Hook</p>
         </div>
         <div className="space-y-2">
           <h3 className="font-bold text-purple-400 mb-2">Tricks (in air)</h3>
@@ -561,9 +967,11 @@ function Instructions() {
           <p><strong className="text-cyan-300">C:</strong> 360 Spin</p>
         </div>
       </div>
-      <div className="mt-4 pt-4 border-t border-cyan-500/50">
-        <p className="text-yellow-400 text-center font-semibold">🚀 Build momentum, do tricks, and go FAST! 🚀</p>
-        <p className="text-gray-400 text-xs text-center mt-2">Yellow platforms give you a speed boost!</p>
+      <div className="mt-4 pt-4 border-t border-cyan-500/50 space-y-2">
+        <p className="text-yellow-400 text-center font-semibold">🚀 Build momentum and chain tricks! 🚀</p>
+        <p className="text-pink-400 text-xs text-center">🧗 Run along RED walls for wallrunning!</p>
+        <p className="text-green-400 text-xs text-center">⚡ Use grappling hook to swing between buildings!</p>
+        <p className="text-purple-400 text-xs text-center">⬆️ Jump while wallrunning for a boost!</p>
       </div>
     </div>
   )
@@ -590,11 +998,15 @@ export default function ParkourGame() {
         shadows
         camera={{ position: [0, 5, 0], fov: 80 }}
       >
-        <Sky sunPosition={[100, 100, 20]} />
-        <ambientLight intensity={0.4} />
+        <Sky 
+          sunPosition={[100, 20, 100]} 
+          turbidity={8}
+          rayleigh={2}
+        />
+        <ambientLight intensity={0.3} />
         <directionalLight
           position={[50, 50, 25]}
-          intensity={1.5}
+          intensity={1.2}
           castShadow
           shadow-mapSize-width={2048}
           shadow-mapSize-height={2048}
@@ -604,10 +1016,11 @@ export default function ParkourGame() {
           shadow-camera-top={100}
           shadow-camera-bottom={-100}
         />
-        <pointLight position={[0, 30, 0]} intensity={0.5} color="#4dabf7" />
-        <pointLight position={[50, 50, 50]} intensity={0.3} color="#ff6b6b" />
+        <pointLight position={[0, 30, 0]} intensity={0.6} color="#4dabf7" />
+        <pointLight position={[50, 50, 50]} intensity={0.4} color="#ff6b6b" />
+        <pointLight position={[-50, 40, -50]} intensity={0.4} color="#51cf66" />
         
-        <Platforms />
+        <RealisticEnvironment />
         <Player onTrick={handleTrick} onSpeedUpdate={handleSpeedUpdate} />
         
         <PointerLockControls
@@ -620,11 +1033,15 @@ export default function ParkourGame() {
         <div className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-md z-30">
           <div className="bg-gradient-to-br from-cyan-900/90 to-purple-900/90 text-white px-12 py-8 rounded-xl text-center border-2 border-cyan-400 shadow-2xl">
             <h1 className="text-4xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
-              3D PARKOUR MASTER
+              ADVANCED PARKOUR MASTER
             </h1>
             <p className="mb-6 text-lg">Click anywhere to start playing!</p>
-            <p className="text-sm text-cyan-300">Use the grappling hook to swing and build momentum</p>
-            <p className="text-sm text-purple-300 mt-2">Perform tricks in the air for extra points!</p>
+            <div className="space-y-2 text-sm">
+              <p className="text-cyan-300">🧗 Wallrun on vertical surfaces</p>
+              <p className="text-green-300">🪝 Grappling hook with realistic physics</p>
+              <p className="text-purple-300">🤸 Perform tricks for extra points</p>
+              <p className="text-yellow-300">🏙️ Explore a realistic urban environment</p>
+            </div>
           </div>
         </div>
       )}
