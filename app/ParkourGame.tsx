@@ -183,29 +183,38 @@ function PlayerModel({
   )
 }
 
-function ThirdPersonCamera({ 
-  target, 
+function ThirdPersonCamera({
+  target,
   active,
-  distance = 5
-}: { 
+  distance = 6,
+  rotationY
+}: {
   target: THREE.Vector3
   active: boolean
   distance?: number
+  rotationY: number
 }) {
   const { camera } = useThree()
-  
+  const smoothedPos = useRef(new THREE.Vector3())
+
+  useEffect(() => {
+    smoothedPos.current.copy(camera.position)
+  }, [camera.position])
+
   useFrame(() => {
     if (!active) return
-    
-    const idealOffset = new THREE.Vector3(0, 2, distance)
-    idealOffset.applyQuaternion(camera.quaternion)
-    
-    const idealPosition = target.clone().add(idealOffset)
-    
-    camera.position.lerp(idealPosition, 0.1)
-    camera.lookAt(target.clone().add(new THREE.Vector3(0, 1, 0)))
+
+    const offset = new THREE.Vector3(0, 2.5, distance)
+    offset.applyAxisAngle(new THREE.Vector3(0, 1, 0), rotationY + Math.PI)
+
+    const idealPosition = target.clone().add(offset)
+
+    smoothedPos.current.lerp(idealPosition, 0.12)
+
+    camera.position.copy(smoothedPos.current)
+    camera.lookAt(target.clone().add(new THREE.Vector3(0, 1.2, 0)))
   })
-  
+
   return null
 }
 
@@ -765,8 +774,6 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
     const playerHeight = 1.8
     
     platforms.forEach((platform) => {
-      if (platform.type === 'building') return
-      
       const [px, py, pz] = platform.position
       const [sx, sy, sz] = platform.size
       
@@ -823,35 +830,33 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
         }
       }
       
-      if (platform.type !== 'wall') {
-        if (nextPosition.x + playerRadius > minX && nextPosition.x - playerRadius < maxX) {
-          if (nextPosition.z + playerRadius > minZ && nextPosition.z + playerRadius < minZ + 0.5 &&
-              camera.position.z + playerRadius <= minZ &&
-              nextPosition.y > minY && nextPosition.y < maxY + playerHeight) {
-            nextPosition.z = minZ - playerRadius
-            velocityRef.current.z = Math.min(0, velocityRef.current.z)
-          }
-          if (nextPosition.z - playerRadius < maxZ && nextPosition.z - playerRadius > maxZ - 0.5 &&
-              camera.position.z - playerRadius >= maxZ &&
-              nextPosition.y > minY && nextPosition.y < maxY + playerHeight) {
-            nextPosition.z = maxZ + playerRadius
-            velocityRef.current.z = Math.max(0, velocityRef.current.z)
-          }
+      if (nextPosition.x + playerRadius > minX && nextPosition.x - playerRadius < maxX) {
+        if (nextPosition.z + playerRadius > minZ && nextPosition.z + playerRadius < minZ + 0.5 &&
+            camera.position.z + playerRadius <= minZ &&
+            nextPosition.y > minY && nextPosition.y < maxY + playerHeight) {
+          nextPosition.z = minZ - playerRadius
+          velocityRef.current.z = Math.min(0, velocityRef.current.z)
         }
-        
-        if (nextPosition.z + playerRadius > minZ && nextPosition.z - playerRadius < maxZ) {
-          if (nextPosition.x + playerRadius > minX && nextPosition.x + playerRadius < minX + 0.5 &&
-              camera.position.x + playerRadius <= minX &&
-              nextPosition.y > minY && nextPosition.y < maxY + playerHeight) {
-            nextPosition.x = minX - playerRadius
-            velocityRef.current.x = Math.min(0, velocityRef.current.x)
-          }
-          if (nextPosition.x - playerRadius < maxX && nextPosition.x - playerRadius > maxX - 0.5 &&
-              camera.position.x - playerRadius >= maxX &&
-              nextPosition.y > minY && nextPosition.y < maxY + playerHeight) {
-            nextPosition.x = maxX + playerRadius
-            velocityRef.current.x = Math.max(0, velocityRef.current.x)
-          }
+        if (nextPosition.z - playerRadius < maxZ && nextPosition.z - playerRadius > maxZ - 0.5 &&
+            camera.position.z - playerRadius >= maxZ &&
+            nextPosition.y > minY && nextPosition.y < maxY + playerHeight) {
+          nextPosition.z = maxZ + playerRadius
+          velocityRef.current.z = Math.max(0, velocityRef.current.z)
+        }
+      }
+
+      if (nextPosition.z + playerRadius > minZ && nextPosition.z - playerRadius < maxZ) {
+        if (nextPosition.x + playerRadius > minX && nextPosition.x + playerRadius < minX + 0.5 &&
+            camera.position.x + playerRadius <= minX &&
+            nextPosition.y > minY && nextPosition.y < maxY + playerHeight) {
+          nextPosition.x = minX - playerRadius
+          velocityRef.current.x = Math.min(0, velocityRef.current.x)
+        }
+        if (nextPosition.x - playerRadius < maxX && nextPosition.x - playerRadius > maxX - 0.5 &&
+            camera.position.x - playerRadius >= maxX &&
+            nextPosition.y > minY && nextPosition.y < maxY + playerHeight) {
+          nextPosition.x = maxX + playerRadius
+          velocityRef.current.x = Math.max(0, velocityRef.current.x)
         }
       }
     })
@@ -900,7 +905,12 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
       )}
       {thirdPerson && (
         <>
-          <ThirdPersonCamera target={playerPosition} active={thirdPerson} distance={6} />
+          <ThirdPersonCamera
+            target={playerPosition}
+            active={thirdPerson}
+            distance={6}
+            rotationY={playerRotation.y}
+          />
           <PlayerModel 
             position={playerPosition}
             rotation={playerRotation}
