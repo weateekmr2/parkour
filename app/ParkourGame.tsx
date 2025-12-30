@@ -74,42 +74,26 @@ interface TrickInfo {
 }
 
 function AdvancedFirstPersonCamera({ 
-  speed, 
-  isWallrunning, 
-  wallrunSide
+  speed
 }: { 
   speed: number
-  isWallrunning: boolean
-  wallrunSide: 'left' | 'right' | null
 }) {
   const targetFov = useRef(80)
   const currentFov = useRef(80)
-  const tiltAmount = useRef(0)
   const bobTime = useRef(0)
   
   useFrame((state, delta) => {
     const cam = state.camera as THREE.PerspectiveCamera
     
-    targetFov.current = 80 + Math.min(speed * 0.4, 30)
+    targetFov.current = 80 + Math.min(speed * 0.4, 25)
     currentFov.current += (targetFov.current - currentFov.current) * delta * 5
     cam.fov = currentFov.current
     cam.updateProjectionMatrix()
     
-    if (isWallrunning && wallrunSide) {
-      const targetTilt = wallrunSide === 'left' ? 0.3 : -0.3
-      tiltAmount.current += (targetTilt - tiltAmount.current) * delta * 8
-    } else {
-      tiltAmount.current += (0 - tiltAmount.current) * delta * 10
-    }
-    
-    cam.rotation.z = tiltAmount.current
-    
-    if (speed > 1) {
-      bobTime.current += delta * speed * 0.15
-      const bobY = Math.sin(bobTime.current) * 0.015
-      const bobX = Math.cos(bobTime.current * 0.5) * 0.01
+    if (speed > 2) {
+      bobTime.current += delta * speed * 0.12
+      const bobY = Math.sin(bobTime.current) * 0.01
       cam.position.y += bobY
-      cam.position.x += bobX
     }
   })
   
@@ -504,6 +488,8 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
     // Wallrunning detection and physics
     if (!isGroundedRef.current && !isGrappling) {
       let foundWall = false
+      const wallNormal = new THREE.Vector3()
+      const wallPosition = new THREE.Vector3()
       
       for (const platform of platforms) {
         if (platform.type !== 'wall') continue
@@ -511,21 +497,51 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
         const [px, py, pz] = platform.position
         const [sx, sy, sz] = platform.size
         
-        const distanceToWall = Math.min(
-          Math.abs(camera.position.x - (px - sx / 2)),
-          Math.abs(camera.position.x - (px + sx / 2)),
-          Math.abs(camera.position.z - (pz - sz / 2)),
-          Math.abs(camera.position.z - (pz + sz / 2))
-        )
+        const playerPos = camera.position
         
-        if (distanceToWall < 2.5 && 
-            camera.position.y > py - sy / 2 && 
-            camera.position.y < py + sy / 2) {
+        const closestPoint = new THREE.Vector3()
+        let minDist = Infinity
+        const normal = new THREE.Vector3()
+        
+        const faces = [
+          { point: new THREE.Vector3(px - sx / 2, py, pz), normal: new THREE.Vector3(-1, 0, 0) },
+          { point: new THREE.Vector3(px + sx / 2, py, pz), normal: new THREE.Vector3(1, 0, 0) },
+          { point: new THREE.Vector3(px, py, pz - sz / 2), normal: new THREE.Vector3(0, 0, -1) },
+          { point: new THREE.Vector3(px, py, pz + sz / 2), normal: new THREE.Vector3(0, 0, 1) },
+        ]
+        
+        for (const face of faces) {
+          const dist = Math.abs(
+            (playerPos.x - face.point.x) * face.normal.x +
+            (playerPos.z - face.point.z) * face.normal.z
+          )
           
+          if (dist < minDist && dist < 2.0) {
+            const projX = playerPos.x - face.normal.x * dist
+            const projZ = playerPos.z - face.normal.z * dist
+            
+            const withinBoundsX = projX >= px - sx / 2 - 1 && projX <= px + sx / 2 + 1
+            const withinBoundsZ = projZ >= pz - sz / 2 - 1 && projZ <= pz + sz / 2 + 1
+            const withinBoundsY = playerPos.y >= py - sy / 2 && playerPos.y <= py + sy / 2
+            
+            if (withinBoundsX && withinBoundsZ && withinBoundsY) {
+              minDist = dist
+              closestPoint.set(projX, playerPos.y, projZ)
+              normal.copy(face.normal)
+            }
+          }
+        }
+        
+        if (minDist < 2.0) {
           const horizontalSpeed = Math.sqrt(velocityRef.current.x ** 2 + velocityRef.current.z ** 2)
           
-          if (horizontalSpeed > 5) {
+          const velocityDir = new THREE.Vector3(velocityRef.current.x, 0, velocityRef.current.z).normalize()
+          const angleToWall = Math.abs(velocityDir.dot(normal))
+          
+          if (horizontalSpeed > 5 && angleToWall < 0.7) {
             foundWall = true
+            wallNormal.copy(normal)
+            wallPosition.copy(closestPoint)
             
             if (!isWallrunning) {
               setIsWallrunning(true)
@@ -533,18 +549,34 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
               onTrick({ name: 'Wallrun!', points: 75, timestamp: Date.now() })
             }
             
-            // Determine wall side
-            const toWall = new THREE.Vector3(px - camera.position.x, 0, pz - camera.position.z)
-            const cross = forward.clone().cross(toWall)
-            setWallrunSide(cross.y > 0 ? 'right' : 'left')
+            const cross = forward.clone().cross(wallNormal)
+            setWallrunSide(cross.y > 0 ? 'left' : 'right')
             
             wallrunTimeRef.current += delta
             
-            // Wallrun physics
-            velocityRef.current.y = Math.max(velocityRef.current.y, -2)
+            const up = new THREE.Vector3(0, 1, 0)
+            const wallRight = new THREE.Vector3().crossVectors(wallNormal, up).normalize()
+            
+            const currentVelOnWall = new THREE.Vector3(velocityRef.current.x, 0, velocityRef.current.z)
+            const velocityAlongWall = currentVelOnWall.dot(wallRight)
+            
+            const wallDirection = wallRight.clone().multiplyScalar(velocityAlongWall > 0 ? 1 : -1)
+            
+            const targetSpeed = Math.max(horizontalSpeed * 0.95, 12)
+            const targetVelocity = wallDirection.multiplyScalar(targetSpeed)
+            
+            velocityRef.current.x = THREE.MathUtils.lerp(velocityRef.current.x, targetVelocity.x, delta * 8)
+            velocityRef.current.z = THREE.MathUtils.lerp(velocityRef.current.z, targetVelocity.z, delta * 8)
+            
+            const pushFromWall = wallNormal.clone().multiplyScalar(0.5)
+            velocityRef.current.x += pushFromWall.x * delta * 10
+            velocityRef.current.z += pushFromWall.z * delta * 10
             
             if (wallrunTimeRef.current < 2.5) {
-              velocityRef.current.y += 8 * delta
+              velocityRef.current.y = Math.max(velocityRef.current.y, -1)
+              velocityRef.current.y += 12 * delta
+            } else {
+              velocityRef.current.y = Math.max(velocityRef.current.y, -3)
             }
             
             break
@@ -684,9 +716,7 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
   return (
     <>
       <AdvancedFirstPersonCamera 
-        speed={currentSpeed} 
-        isWallrunning={isWallrunning}
-        wallrunSide={wallrunSide}
+        speed={currentSpeed}
       />
       <FirstPersonHands 
         speed={currentSpeed}
