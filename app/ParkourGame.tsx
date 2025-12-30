@@ -14,54 +14,44 @@ interface Platform {
 }
 
 const platforms: Platform[] = [
-  // Ground area
   { position: [0, -0.5, 0], size: [40, 1, 40], color: '#4a5568', type: 'normal' },
   
-  // Building 1 - Left side complex
   { position: [-20, 5, 0], size: [15, 10, 20], color: '#34495e', type: 'building' },
   { position: [-20, 10.5, 0], size: [15, 1, 20], color: '#2c3e50', type: 'normal' },
   { position: [-27.5, 5, 0], size: [1, 10, 20], color: '#2c3e50', type: 'wall' },
   { position: [-12.5, 5, 0], size: [1, 10, 20], color: '#2c3e50', type: 'wall' },
   
-  // Building 2 - Right side complex
   { position: [20, 8, 0], size: [18, 16, 22], color: '#2d3436', type: 'building' },
   { position: [20, 16.5, 0], size: [18, 1, 22], color: '#2c3e50', type: 'normal' },
   { position: [29, 8, 0], size: [1, 16, 22], color: '#2c3e50', type: 'wall' },
   { position: [11, 8, 0], size: [1, 16, 22], color: '#2c3e50', type: 'wall' },
   
-  // Central tower
   { position: [0, 15, -30], size: [12, 30, 12], color: '#34495e', type: 'building' },
   { position: [0, 30.5, -30], size: [12, 1, 12], color: '#e74c3c', type: 'jump' },
   { position: [-6, 15, -30], size: [1, 30, 12], color: '#2c3e50', type: 'wall' },
   { position: [6, 15, -30], size: [1, 30, 12], color: '#2c3e50', type: 'wall' },
   
-  // Connection platforms
   { position: [10, 12, -15], size: [8, 1, 8], color: '#2c3e50', type: 'normal' },
   { position: [-10, 14, -15], size: [8, 1, 8], color: '#2c3e50', type: 'normal' },
   
-  // Building 3 - Back complex
   { position: [25, 18, -40], size: [16, 36, 18], color: '#2d3436', type: 'building' },
   { position: [25, 36.5, -40], size: [16, 1, 18], color: '#27ae60', type: 'jump' },
   { position: [33, 18, -40], size: [1, 36, 18], color: '#2c3e50', type: 'wall' },
   { position: [17, 18, -40], size: [1, 36, 18], color: '#2c3e50', type: 'wall' },
   
-  // Building 4 - Left back
   { position: [-25, 22, -40], size: [14, 44, 16], color: '#34495e', type: 'building' },
   { position: [-25, 44.5, -40], size: [14, 1, 16], color: '#27ae60', type: 'jump' },
   { position: [-32, 22, -40], size: [1, 44, 16], color: '#2c3e50', type: 'wall' },
   { position: [-18, 22, -40], size: [1, 44, 16], color: '#2c3e50', type: 'wall' },
   
-  // Parkour course platforms
   { position: [15, 20, -20], size: [6, 1, 6], color: '#e74c3c', type: 'jump' },
   { position: [-15, 24, -25], size: [6, 1, 6], color: '#e74c3c', type: 'jump' },
   { position: [0, 38, -45], size: [8, 1, 8], color: '#27ae60', type: 'jump' },
   
-  // Standalone walls for wallrunning
   { position: [0, 10, 15], size: [25, 20, 1], color: '#2c3e50', type: 'wall' },
   { position: [30, 12, -10], size: [1, 24, 20], color: '#2c3e50', type: 'wall' },
   { position: [-30, 15, -10], size: [1, 30, 20], color: '#2c3e50', type: 'wall' },
   
-  // High platforms for advanced parkour
   { position: [0, 50, -55], size: [10, 1, 10], color: '#f39c12', type: 'normal' },
   { position: [15, 55, -60], size: [8, 1, 8], color: '#f39c12', type: 'normal' },
   { position: [-15, 60, -60], size: [8, 1, 8], color: '#f39c12', type: 'normal' },
@@ -71,6 +61,152 @@ interface TrickInfo {
   name: string
   points: number
   timestamp: number
+}
+
+function PlayerModel({ 
+  position, 
+  rotation,
+  isGrounded,
+  currentTrick
+}: { 
+  position: THREE.Vector3
+  rotation: THREE.Euler
+  isGrounded: boolean
+  currentTrick: string | null
+}) {
+  const groupRef = useRef<THREE.Group>(null)
+  const leftArmRef = useRef<THREE.Group>(null)
+  const rightArmRef = useRef<THREE.Group>(null)
+  const leftLegRef = useRef<THREE.Group>(null)
+  const rightLegRef = useRef<THREE.Group>(null)
+  const bodyRef = useRef<THREE.Group>(null)
+  const trickRotation = useRef({ x: 0, y: 0, z: 0 })
+  const legSwing = useRef(0)
+  const armSwing = useRef(0)
+  
+  useFrame((state, delta) => {
+    if (!groupRef.current) return
+    
+    groupRef.current.position.copy(position)
+    groupRef.current.rotation.y = rotation.y
+    
+    if (currentTrick) {
+      if (currentTrick === 'Barrel Roll') {
+        trickRotation.current.z += delta * 15
+      } else if (currentTrick === 'Front Flip') {
+        trickRotation.current.x += delta * 15
+      } else if (currentTrick === 'Back Flip') {
+        trickRotation.current.x -= delta * 15
+      } else if (currentTrick === '360 Spin') {
+        trickRotation.current.y += delta * 20
+      }
+    } else {
+      trickRotation.current.x *= 0.9
+      trickRotation.current.y *= 0.9
+      trickRotation.current.z *= 0.9
+    }
+    
+    if (isGrounded) {
+      legSwing.current += delta * 8
+      armSwing.current += delta * 8
+    }
+    
+    if (bodyRef.current) {
+      bodyRef.current.rotation.set(
+        trickRotation.current.x,
+        trickRotation.current.y,
+        trickRotation.current.z
+      )
+    }
+    
+    if (leftArmRef.current) {
+      leftArmRef.current.rotation.x = Math.sin(armSwing.current) * 0.5
+    }
+    if (rightArmRef.current) {
+      rightArmRef.current.rotation.x = Math.sin(armSwing.current + Math.PI) * 0.5
+    }
+    if (leftLegRef.current) {
+      leftLegRef.current.rotation.x = Math.sin(legSwing.current) * 0.3
+    }
+    if (rightLegRef.current) {
+      rightLegRef.current.rotation.x = Math.sin(legSwing.current + Math.PI) * 0.3
+    }
+  })
+  
+  return (
+    <group ref={groupRef}>
+      <group ref={bodyRef}>
+        <mesh position={[0, 0.9, 0]} castShadow receiveShadow>
+          <boxGeometry args={[0.6, 1, 0.4]} />
+          <meshStandardMaterial color="#2196f3" roughness={0.7} metalness={0.3} />
+        </mesh>
+        
+        <mesh position={[0, 1.6, 0]} castShadow receiveShadow>
+          <boxGeometry args={[0.5, 0.5, 0.5]} />
+          <meshStandardMaterial color="#ffb74d" roughness={0.8} />
+        </mesh>
+        
+        <mesh position={[0, 1.65, 0.2]} castShadow>
+          <boxGeometry args={[0.15, 0.15, 0.1]} />
+          <meshStandardMaterial color="#fff" />
+        </mesh>
+        
+        <group ref={leftArmRef} position={[-0.35, 0.8, 0]}>
+          <mesh castShadow>
+            <boxGeometry args={[0.2, 0.8, 0.2]} />
+            <meshStandardMaterial color="#2196f3" roughness={0.7} />
+          </mesh>
+        </group>
+        
+        <group ref={rightArmRef} position={[0.35, 0.8, 0]}>
+          <mesh castShadow>
+            <boxGeometry args={[0.2, 0.8, 0.2]} />
+            <meshStandardMaterial color="#2196f3" roughness={0.7} />
+          </mesh>
+        </group>
+        
+        <group ref={leftLegRef} position={[-0.18, 0.1, 0]}>
+          <mesh castShadow>
+            <boxGeometry args={[0.25, 0.7, 0.25]} />
+            <meshStandardMaterial color="#1565c0" roughness={0.7} />
+          </mesh>
+        </group>
+        
+        <group ref={rightLegRef} position={[0.18, 0.1, 0]}>
+          <mesh castShadow>
+            <boxGeometry args={[0.25, 0.7, 0.25]} />
+            <meshStandardMaterial color="#1565c0" roughness={0.7} />
+          </mesh>
+        </group>
+      </group>
+    </group>
+  )
+}
+
+function ThirdPersonCamera({ 
+  target, 
+  active,
+  distance = 5
+}: { 
+  target: THREE.Vector3
+  active: boolean
+  distance?: number
+}) {
+  const { camera } = useThree()
+  
+  useFrame(() => {
+    if (!active) return
+    
+    const idealOffset = new THREE.Vector3(0, 2, distance)
+    idealOffset.applyQuaternion(camera.quaternion)
+    
+    const idealPosition = target.clone().add(idealOffset)
+    
+    camera.position.lerp(idealPosition, 0.1)
+    camera.lookAt(target.clone().add(new THREE.Vector3(0, 1, 0)))
+  })
+  
+  return null
 }
 
 function AdvancedFirstPersonCamera({ 
@@ -120,7 +256,6 @@ function FirstPersonHands({
   useFrame((state, delta) => {
     if (!leftHandRef.current || !rightHandRef.current) return
     
-    // Running animation
     if (isGrounded && speed > 1) {
       bobTime.current += delta * speed * 0.3
       
@@ -134,7 +269,6 @@ function FirstPersonHands({
       rightHandRef.current.position.set(0.35 - swingX, -0.45 + rightBob, -0.8)
       rightHandRef.current.rotation.set(0.2 + rightBob * 2, -0.3, -0.1 - swingX)
     }
-    // Wallrun animation
     else if (isWallrunning) {
       const targetLeftPos = wallrunSide === 'left' ? 
         new THREE.Vector3(-0.5, -0.3, -0.7) : 
@@ -149,7 +283,6 @@ function FirstPersonHands({
       leftHandRef.current.rotation.set(0.1, 0.5, wallrunSide === 'left' ? 0.5 : 0)
       rightHandRef.current.rotation.set(0.1, -0.5, wallrunSide === 'right' ? -0.5 : 0)
     }
-    // Grappling animation
     else if (isGrappling) {
       bobTime.current += delta * 8
       const grapplingBob = Math.sin(bobTime.current) * 0.03
@@ -160,7 +293,6 @@ function FirstPersonHands({
       rightHandRef.current.position.set(0.45, -0.25 - grapplingBob, -0.6)
       rightHandRef.current.rotation.set(-0.3, -0.2, -0.1)
     }
-    // Idle/air animation
     else {
       bobTime.current += delta * 3
       const idleBob = Math.sin(bobTime.current) * 0.01
@@ -175,7 +307,6 @@ function FirstPersonHands({
   
   return (
     <group>
-      {/* Left Hand */}
       <group ref={leftHandRef}>
         <mesh castShadow>
           <boxGeometry args={[0.1, 0.25, 0.1]} />
@@ -185,7 +316,6 @@ function FirstPersonHands({
           <boxGeometry args={[0.12, 0.08, 0.18]} />
           <meshStandardMaterial color="#d4a574" roughness={0.8} />
         </mesh>
-        {/* Fingers */}
         <mesh position={[0.03, -0.24, 0.05]} castShadow>
           <boxGeometry args={[0.02, 0.06, 0.02]} />
           <meshStandardMaterial color="#d4a574" roughness={0.8} />
@@ -196,7 +326,6 @@ function FirstPersonHands({
         </mesh>
       </group>
       
-      {/* Right Hand */}
       <group ref={rightHandRef}>
         <mesh castShadow>
           <boxGeometry args={[0.1, 0.25, 0.1]} />
@@ -206,7 +335,6 @@ function FirstPersonHands({
           <boxGeometry args={[0.12, 0.08, 0.18]} />
           <meshStandardMaterial color="#d4a574" roughness={0.8} />
         </mesh>
-        {/* Fingers */}
         <mesh position={[-0.03, -0.24, 0.05]} castShadow>
           <boxGeometry args={[0.02, 0.06, 0.02]} />
           <meshStandardMaterial color="#d4a574" roughness={0.8} />
@@ -244,7 +372,6 @@ function GrapplingHookModel({
       hookRef.current.lookAt(camera.position.clone().add(direction))
       hookRef.current.rotateX(Math.PI / 4)
       
-      // Recoil animation
       animationTime.current += delta * 10
       const recoil = Math.max(0, 1 - animationTime.current * 0.5)
       hookRef.current.position.x -= recoil * 0.1
@@ -261,25 +388,21 @@ function GrapplingHookModel({
   
   return (
     <group ref={hookRef}>
-      {/* Handle */}
       <mesh castShadow>
         <cylinderGeometry args={[0.04, 0.04, 0.25, 8]} />
         <meshStandardMaterial color="#1a1a1a" metalness={0.3} roughness={0.7} />
       </mesh>
       
-      {/* Barrel */}
       <mesh position={[0, 0.18, 0]} castShadow>
         <cylinderGeometry args={[0.03, 0.035, 0.15, 8]} />
         <meshStandardMaterial color="#333333" metalness={0.8} roughness={0.2} />
       </mesh>
       
-      {/* Hook tip */}
       <mesh position={[0, 0.25, 0]} castShadow>
         <coneGeometry args={[0.06, 0.12, 8]} />
         <meshStandardMaterial color="#666666" metalness={0.9} roughness={0.1} />
       </mesh>
       
-      {/* Hook prongs */}
       <mesh position={[0.05, 0.3, 0]} rotation={[0, 0, Math.PI / 3]} castShadow>
         <boxGeometry args={[0.1, 0.025, 0.025]} />
         <meshStandardMaterial color="#555555" metalness={0.8} roughness={0.2} />
@@ -289,7 +412,6 @@ function GrapplingHookModel({
         <meshStandardMaterial color="#555555" metalness={0.8} roughness={0.2} />
       </mesh>
       
-      {/* Details */}
       <mesh position={[0, 0.05, 0]} castShadow>
         <torusGeometry args={[0.045, 0.01, 8, 16]} />
         <meshStandardMaterial color="#ff4444" metalness={0.9} roughness={0.1} />
@@ -301,6 +423,8 @@ function GrapplingHookModel({
 function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => void, onSpeedUpdate: (speed: number) => void }) {
   const { camera } = useThree()
   const velocityRef = useRef(new THREE.Vector3())
+  const [playerPosition, setPlayerPosition] = useState(new THREE.Vector3(0, 2, 0))
+  const [playerRotation, setPlayerRotation] = useState(new THREE.Euler(0, 0, 0))
   const [isGrappling, setIsGrappling] = useState(false)
   const [grapplePoint, setGrapplePoint] = useState<THREE.Vector3 | null>(null)
   const [grappleRope, setGrappleRope] = useState<[THREE.Vector3, THREE.Vector3] | null>(null)
@@ -308,6 +432,8 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
   const [wallrunSide, setWallrunSide] = useState<'left' | 'right' | null>(null)
   const [isFiring, setIsFiring] = useState(false)
   const [isGrounded, setIsGrounded] = useState(false)
+  const [thirdPerson, setThirdPerson] = useState(false)
+  const [currentTrick, setCurrentTrick] = useState<string | null>(null)
   const keysPressed = useRef<Set<string>>(new Set())
   const isGroundedRef = useRef(false)
   const lastJumpTime = useRef(0)
@@ -322,14 +448,16 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
     const handleKeyDown = (e: KeyboardEvent) => {
       keysPressed.current.add(e.code)
       
-      // Jump
+      if (e.code === 'KeyV') {
+        setThirdPerson(prev => !prev)
+      }
+      
       if (e.code === 'Space') {
         if (isGroundedRef.current && Date.now() - lastJumpTime.current > 300) {
           velocityRef.current.y = 12
           isGroundedRef.current = false
           lastJumpTime.current = Date.now()
         }
-        // Wall jump
         else if (isWallrunning && Date.now() - lastJumpTime.current > 300) {
           velocityRef.current.y = 14
           const jumpDirection = wallrunSide === 'left' ? 1 : -1
@@ -349,27 +477,37 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
         }
       }
       
-      // Grapple
       if (e.code === 'KeyE') {
         handleGrapple()
       }
       
-      // Tricks
       if (!isGroundedRef.current && Date.now() - lastTrickTime.current > 1000) {
         if (e.code === 'KeyQ') {
-          onTrick({ name: 'Barrel Roll', points: 100, timestamp: Date.now() })
+          const trick = { name: 'Barrel Roll', points: 100, timestamp: Date.now() }
+          onTrick(trick)
+          setCurrentTrick('Barrel Roll')
+          setTimeout(() => setCurrentTrick(null), 800)
           lastTrickTime.current = Date.now()
         }
         if (e.code === 'KeyZ') {
-          onTrick({ name: 'Front Flip', points: 150, timestamp: Date.now() })
+          const trick = { name: 'Front Flip', points: 150, timestamp: Date.now() }
+          onTrick(trick)
+          setCurrentTrick('Front Flip')
+          setTimeout(() => setCurrentTrick(null), 800)
           lastTrickTime.current = Date.now()
         }
         if (e.code === 'KeyX') {
-          onTrick({ name: 'Back Flip', points: 150, timestamp: Date.now() })
+          const trick = { name: 'Back Flip', points: 150, timestamp: Date.now() }
+          onTrick(trick)
+          setCurrentTrick('Back Flip')
+          setTimeout(() => setCurrentTrick(null), 800)
           lastTrickTime.current = Date.now()
         }
         if (e.code === 'KeyC') {
-          onTrick({ name: '360 Spin', points: 200, timestamp: Date.now() })
+          const trick = { name: '360 Spin', points: 200, timestamp: Date.now() }
+          onTrick(trick)
+          setCurrentTrick('360 Spin')
+          setTimeout(() => setCurrentTrick(null), 800)
           lastTrickTime.current = Date.now()
         }
       }
@@ -380,7 +518,7 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
     }
     
     const handleMouseDown = (e: MouseEvent) => {
-      if (e.button === 0) {
+      if (e.button === 0 && document.pointerLockElement) {
         handleGrapple()
       }
     }
@@ -465,7 +603,6 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
       velocityRef.current.z += moveDirection.z * speed * delta * controlFactor
     }
     
-    // Grappling hook physics
     if (isGrappling && grapplePoint) {
       const toGrapple = new THREE.Vector3()
       toGrapple.subVectors(grapplePoint, camera.position)
@@ -485,7 +622,6 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
       setGrappleRope(null)
     }
     
-    // Wallrunning detection and physics
     if (!isGroundedRef.current && !isGrappling) {
       let foundWall = false
       const wallNormal = new THREE.Vector3()
@@ -593,7 +729,6 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
       setWallrunSide(null)
     }
     
-    // Gravity
     if (!isGrappling) {
       const gravityMultiplier = isWallrunning ? 0.3 : 1
       velocityRef.current.y -= 30 * delta * gravityMultiplier
@@ -601,12 +736,10 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
       velocityRef.current.y -= 10 * delta
     }
     
-    // Friction
     const friction = isGroundedRef.current ? 0.82 : (isWallrunning ? 0.95 : 0.99)
     velocityRef.current.x *= friction
     velocityRef.current.z *= friction
     
-    // Speed limit
     const maxHorizontalSpeed = 50
     const horizontalSpeed = Math.sqrt(velocityRef.current.x ** 2 + velocityRef.current.z ** 2)
     if (horizontalSpeed > maxHorizontalSpeed) {
@@ -615,14 +748,12 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
       velocityRef.current.z *= scale
     }
     
-    // Update speed display
     if (Date.now() - lastSpeedCheck.current > 100) {
       setCurrentSpeed(horizontalSpeed)
       onSpeedUpdate(horizontalSpeed)
       lastSpeedCheck.current = Date.now()
     }
     
-    // Movement and collision
     const nextPosition = camera.position.clone()
     nextPosition.add(velocityRef.current.clone().multiplyScalar(delta))
     
@@ -630,8 +761,11 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
     isGroundedRef.current = false
     let newGroundedState = false
     
+    const playerRadius = 0.5
+    const playerHeight = 1.8
+    
     platforms.forEach((platform) => {
-      if (platform.type === 'building' || platform.type === 'wall') return
+      if (platform.type === 'building') return
       
       const [px, py, pz] = platform.position
       const [sx, sy, sz] = platform.size
@@ -643,9 +777,6 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
       const minZ = pz - sz / 2
       const maxZ = pz + sz / 2
       
-      const playerRadius = 0.5
-      const playerHeight = 1.8
-      
       if (
         nextPosition.x + playerRadius > minX &&
         nextPosition.x - playerRadius < maxX &&
@@ -653,13 +784,13 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
         nextPosition.z - playerRadius < maxZ
       ) {
         if (
-          camera.position.y - playerHeight / 2 >= maxY &&
-          nextPosition.y - playerHeight / 2 < maxY
+          camera.position.y - playerHeight / 2 >= maxY - 0.1 &&
+          nextPosition.y - playerHeight / 2 <= maxY
         ) {
           nextPosition.y = maxY + playerHeight / 2
           
           if (platform.type === 'jump') {
-            velocityRef.current.y = Math.max(velocityRef.current.y * -1.2, 15)
+            velocityRef.current.y = Math.max(Math.abs(velocityRef.current.y) * 1.2, 15)
             onTrick({ name: 'Jump Boost!', points: 25, timestamp: Date.now() })
           } else {
             velocityRef.current.y = Math.max(0, velocityRef.current.y)
@@ -684,11 +815,43 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
           }
         }
         else if (
-          camera.position.y + playerHeight / 2 <= minY &&
-          nextPosition.y + playerHeight / 2 > minY
+          camera.position.y + playerHeight / 2 <= minY + 0.1 &&
+          nextPosition.y + playerHeight / 2 >= minY
         ) {
           nextPosition.y = minY - playerHeight / 2
           velocityRef.current.y = Math.min(0, velocityRef.current.y)
+        }
+      }
+      
+      if (platform.type !== 'wall') {
+        if (nextPosition.x + playerRadius > minX && nextPosition.x - playerRadius < maxX) {
+          if (nextPosition.z + playerRadius > minZ && nextPosition.z + playerRadius < minZ + 0.5 &&
+              camera.position.z + playerRadius <= minZ &&
+              nextPosition.y > minY && nextPosition.y < maxY + playerHeight) {
+            nextPosition.z = minZ - playerRadius
+            velocityRef.current.z = Math.min(0, velocityRef.current.z)
+          }
+          if (nextPosition.z - playerRadius < maxZ && nextPosition.z - playerRadius > maxZ - 0.5 &&
+              camera.position.z - playerRadius >= maxZ &&
+              nextPosition.y > minY && nextPosition.y < maxY + playerHeight) {
+            nextPosition.z = maxZ + playerRadius
+            velocityRef.current.z = Math.max(0, velocityRef.current.z)
+          }
+        }
+        
+        if (nextPosition.z + playerRadius > minZ && nextPosition.z - playerRadius < maxZ) {
+          if (nextPosition.x + playerRadius > minX && nextPosition.x + playerRadius < minX + 0.5 &&
+              camera.position.x + playerRadius <= minX &&
+              nextPosition.y > minY && nextPosition.y < maxY + playerHeight) {
+            nextPosition.x = minX - playerRadius
+            velocityRef.current.x = Math.min(0, velocityRef.current.x)
+          }
+          if (nextPosition.x - playerRadius < maxX && nextPosition.x - playerRadius > maxX - 0.5 &&
+              camera.position.x - playerRadius >= maxX &&
+              nextPosition.y > minY && nextPosition.y < maxY + playerHeight) {
+            nextPosition.x = maxX + playerRadius
+            velocityRef.current.x = Math.max(0, velocityRef.current.x)
+          }
         }
       }
     })
@@ -699,7 +862,6 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
       airTimeRef.current += delta
     }
     
-    // Respawn if fallen
     if (nextPosition.y < -30) {
       nextPosition.set(0, 10, 0)
       velocityRef.current.set(0, 0, 0)
@@ -711,6 +873,8 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
     }
     
     camera.position.copy(nextPosition)
+    setPlayerPosition(nextPosition.clone())
+    setPlayerRotation(new THREE.Euler().setFromQuaternion(camera.quaternion))
   })
   
   return (
@@ -718,18 +882,33 @@ function Player({ onTrick, onSpeedUpdate }: { onTrick: (trick: TrickInfo) => voi
       <AdvancedFirstPersonCamera 
         speed={currentSpeed}
       />
-      <FirstPersonHands 
-        speed={currentSpeed}
-        isGrounded={isGrounded}
-        isWallrunning={isWallrunning}
-        isGrappling={isGrappling}
-        wallrunSide={wallrunSide}
-      />
-      <GrapplingHookModel 
-        isGrappling={isGrappling} 
-        grapplePoint={grapplePoint}
-        isFiring={isFiring}
-      />
+      {!thirdPerson && (
+        <>
+          <FirstPersonHands 
+            speed={currentSpeed}
+            isGrounded={isGrounded}
+            isWallrunning={isWallrunning}
+            isGrappling={isGrappling}
+            wallrunSide={wallrunSide}
+          />
+          <GrapplingHookModel 
+            isGrappling={isGrappling} 
+            grapplePoint={grapplePoint}
+            isFiring={isFiring}
+          />
+        </>
+      )}
+      {thirdPerson && (
+        <>
+          <ThirdPersonCamera target={playerPosition} active={thirdPerson} distance={6} />
+          <PlayerModel 
+            position={playerPosition}
+            rotation={playerRotation}
+            isGrounded={isGrounded}
+            currentTrick={currentTrick}
+          />
+        </>
+      )}
       {grappleRope && (() => {
         const points = []
         const segments = 10
@@ -791,7 +970,6 @@ function RealisticEnvironment() {
               />
             </mesh>
             
-            {/* Window details for buildings */}
             {isBuilding && (() => {
               const windows = []
               const [sx, sy, sz] = platform.size
@@ -805,7 +983,6 @@ function RealisticEnvironment() {
                   const x = px - sx / 2 + (i + 0.5) * (sx / windowsX)
                   const y = py - sy / 2 + (j + 0.5) * (sy / windowsY)
                   
-                  // Front face
                   windows.push(
                     <mesh key={`f-${i}-${j}`} position={[x, y, pz + sz / 2 + 0.1]} castShadow>
                       <boxGeometry args={[1, 1.2, 0.1]} />
@@ -819,7 +996,6 @@ function RealisticEnvironment() {
                     </mesh>
                   )
                   
-                  // Back face
                   windows.push(
                     <mesh key={`b-${i}-${j}`} position={[x, y, pz - sz / 2 - 0.1]} castShadow>
                       <boxGeometry args={[1, 1.2, 0.1]} />
@@ -838,7 +1014,6 @@ function RealisticEnvironment() {
               return <>{windows}</>
             })()}
             
-            {/* Jump pad indicator */}
             {isJump && (
               <mesh position={[platform.position[0], platform.position[1] + 0.6, platform.position[2]]}>
                 <coneGeometry args={[0.8, 1.5, 4]} />
@@ -852,7 +1027,6 @@ function RealisticEnvironment() {
               </mesh>
             )}
             
-            {/* Wall grip indicators */}
             {isWall && (() => {
               const grips = []
               const [sx, sy, sz] = platform.size
@@ -887,19 +1061,17 @@ function RealisticEnvironment() {
         )
       })}
       
-      {/* Ground plane */}
       <mesh position={[0, -10, 0]} receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[500, 500]} />
         <meshStandardMaterial color="#1a1a2e" roughness={0.9} />
       </mesh>
       
-      {/* Fog effect */}
       <fog attach="fog" args={['#0d1117', 50, 200]} />
     </>
   )
 }
 
-function HUD({ speed, tricks, score }: { speed: number, tricks: TrickInfo[], score: number }) {
+function HUD({ speed, tricks, score, thirdPerson }: { speed: number, tricks: TrickInfo[], score: number, thirdPerson: boolean }) {
   return (
     <div className="fixed inset-0 pointer-events-none z-50">
       <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-sm text-white p-4 rounded-lg border border-cyan-500/50">
@@ -922,6 +1094,10 @@ function HUD({ speed, tricks, score }: { speed: number, tricks: TrickInfo[], sco
           <div className="flex items-center justify-between gap-4 pt-2 border-t border-cyan-500/30">
             <div className="text-yellow-400 font-mono text-xs">SCORE</div>
             <div className="font-bold text-2xl text-yellow-400">{score}</div>
+          </div>
+          
+          <div className="pt-2 border-t border-cyan-500/30">
+            <div className="text-purple-400 font-mono text-xs">{thirdPerson ? '3RD PERSON' : '1ST PERSON'}</div>
           </div>
         </div>
       </div>
@@ -951,19 +1127,22 @@ function HUD({ speed, tricks, score }: { speed: number, tricks: TrickInfo[], sco
           <div className="flex gap-2"><span className="text-gray-400">WASD</span> Move</div>
           <div className="flex gap-2"><span className="text-gray-400">Space</span> Jump/Wall Jump</div>
           <div className="flex gap-2"><span className="text-gray-400">E/Click</span> Grapple</div>
+          <div className="flex gap-2"><span className="text-gray-400">V</span> Toggle Camera</div>
           <div className="flex gap-2"><span className="text-gray-400">Q/Z/X/C</span> Air Tricks</div>
         </div>
       </div>
       
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-        <div className="relative w-8 h-8">
-          <div className="absolute left-1/2 top-1/2 w-0.5 h-3 bg-cyan-400 -translate-x-1/2 -translate-y-full shadow-lg shadow-cyan-500/50" />
-          <div className="absolute left-1/2 top-1/2 w-0.5 h-3 bg-cyan-400 -translate-x-1/2 shadow-lg shadow-cyan-500/50" />
-          <div className="absolute left-1/2 top-1/2 w-3 h-0.5 bg-cyan-400 -translate-y-1/2 -translate-x-full shadow-lg shadow-cyan-500/50" />
-          <div className="absolute left-1/2 top-1/2 w-3 h-0.5 bg-cyan-400 -translate-y-1/2 shadow-lg shadow-cyan-500/50" />
-          <div className="absolute left-1/2 top-1/2 w-1.5 h-1.5 border-2 border-cyan-400 rounded-full -translate-x-1/2 -translate-y-1/2 shadow-lg shadow-cyan-500/50" />
+      {!thirdPerson && (
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <div className="relative w-8 h-8">
+            <div className="absolute left-1/2 top-1/2 w-0.5 h-3 bg-cyan-400 -translate-x-1/2 -translate-y-full shadow-lg shadow-cyan-500/50" />
+            <div className="absolute left-1/2 top-1/2 w-0.5 h-3 bg-cyan-400 -translate-x-1/2 shadow-lg shadow-cyan-500/50" />
+            <div className="absolute left-1/2 top-1/2 w-3 h-0.5 bg-cyan-400 -translate-y-1/2 -translate-x-full shadow-lg shadow-cyan-500/50" />
+            <div className="absolute left-1/2 top-1/2 w-3 h-0.5 bg-cyan-400 -translate-y-1/2 shadow-lg shadow-cyan-500/50" />
+            <div className="absolute left-1/2 top-1/2 w-1.5 h-1.5 border-2 border-cyan-400 rounded-full -translate-x-1/2 -translate-y-1/2 shadow-lg shadow-cyan-500/50" />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
@@ -972,7 +1151,7 @@ function Instructions() {
   const [show, setShow] = useState(true)
   
   useEffect(() => {
-    const timer = setTimeout(() => setShow(false), 12000)
+    const timer = setTimeout(() => setShow(false), 15000)
     return () => clearTimeout(timer)
   }, [])
   
@@ -988,6 +1167,7 @@ function Instructions() {
           <p><strong className="text-cyan-300">Mouse:</strong> Look</p>
           <p><strong className="text-cyan-300">Space:</strong> Jump</p>
           <p><strong className="text-cyan-300">Click/E:</strong> Grapple Hook</p>
+          <p><strong className="text-cyan-300">V:</strong> Toggle Camera</p>
         </div>
         <div className="space-y-2">
           <h3 className="font-bold text-purple-400 mb-2">Tricks (in air)</h3>
@@ -998,7 +1178,7 @@ function Instructions() {
         </div>
       </div>
       <div className="mt-4 pt-4 border-t border-cyan-500/50 space-y-2">
-        <p className="text-yellow-400 text-center font-semibold">🚀 Build momentum and chain tricks! 🚀</p>
+        <p className="text-yellow-400 text-center font-semibold">🚀 Press V to see your character! 🚀</p>
         <p className="text-pink-400 text-xs text-center">🧗 Run along RED walls for wallrunning!</p>
         <p className="text-green-400 text-xs text-center">⚡ Use grappling hook to swing between buildings!</p>
         <p className="text-purple-400 text-xs text-center">⬆️ Jump while wallrunning for a boost!</p>
@@ -1012,6 +1192,7 @@ export default function ParkourGame() {
   const [speed, setSpeed] = useState(0)
   const [tricks, setTricks] = useState<TrickInfo[]>([])
   const [score, setScore] = useState(0)
+  const [thirdPerson, setThirdPerson] = useState(false)
   
   const handleTrick = (trick: TrickInfo) => {
     setTricks(prev => [...prev, trick])
@@ -1021,6 +1202,17 @@ export default function ParkourGame() {
   const handleSpeedUpdate = (newSpeed: number) => {
     setSpeed(newSpeed)
   }
+  
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'KeyV' && isLocked) {
+        setThirdPerson(prev => !prev)
+      }
+    }
+    
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isLocked])
   
   return (
     <div className="w-screen h-screen">
@@ -1069,8 +1261,9 @@ export default function ParkourGame() {
             <div className="space-y-2 text-sm">
               <p className="text-cyan-300">🧗 Wallrun on vertical surfaces</p>
               <p className="text-green-300">🪝 Grappling hook with realistic physics</p>
-              <p className="text-purple-300">🤸 Perform tricks for extra points</p>
+              <p className="text-purple-300">🤸 Perform tricks and SEE THEM with 3rd person!</p>
               <p className="text-yellow-300">🏙️ Explore a realistic urban environment</p>
+              <p className="text-pink-300">📹 Press V to toggle camera views</p>
             </div>
           </div>
         </div>
@@ -1078,7 +1271,7 @@ export default function ParkourGame() {
       
       {isLocked && (
         <>
-          <HUD speed={speed} tricks={tricks} score={score} />
+          <HUD speed={speed} tricks={tricks} score={score} thirdPerson={thirdPerson} />
           <Instructions />
         </>
       )}
